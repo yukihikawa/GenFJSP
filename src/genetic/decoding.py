@@ -3,7 +3,7 @@
 import sys
 
 
-def split_ms(pb_instance, ms):
+def split_ms(pb_instance, ms): # 切除
     jobs = []
     current = 0
 
@@ -46,14 +46,14 @@ def find_first_available_place(start_ctr, duration, machine_jobs):  # 查找第�
     # 更新数组
     for job in machine_jobs:
         start = job[3]
-        len = job[1]
-        for k in range(start, start + len):
+        long = job[1]
+        for k in range(start, start + long):
             machine_used[k] = False
 
     # 找第一个符合约束的空位
     for k in range(start_ctr, len(machine_used)):
         if is_free(machine_used, k, duration):
-            return k;
+            return k
 
 
 def decode(pb_instance, os, ms):
@@ -67,12 +67,36 @@ def decode(pb_instance, os, ms):
 
     # 迭代 OS 获取任务执行顺序
     # MS 获取机器码
-    for job in os:
+    for job in os: # 遍历 os 中的工序
         index_machine = ms_s[job][indexes[job]]
         machine = o[job][indexes[job]][index_machine]['machine']
         prcTime = o[job][indexes[job]][index_machine]['processingTime']
+        start_cstr = start_task_cstr[job]
+
+        # 获取操作的第一个可用位置(时间空隙
+        start = find_first_available_place(start_cstr, prcTime, machine_operations[machine - 1])
+        name_task = "{}-{}".format(job, indexes[job] + 1)
+
+        machine_operations[machine - 1].append((name_task, prcTime, start_cstr, start))
+
+        # Updating indexes (one for the current task for each job, one for the start constraint
+        # for each job)
+        indexes[job] += 1
+        start_task_cstr[job] = (start + prcTime)
+
+    return machine_operations
 
 
 
 def translate_decoded_to_gantt(machine_operations):
-    pass
+    data = {}
+
+    for idx, machine in enumerate(machine_operations):
+        machine_name = "Machine-{}".format(idx + 1)
+        operations = []
+        for operation in machine:
+            operations.append([operation[3], operation[3] + operation[1], operation[0]])
+
+        data[machine_name] = operations
+
+    return data

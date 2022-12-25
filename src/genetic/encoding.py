@@ -10,8 +10,8 @@ def generateOS(parameters):
 
     OS = [] # 任务的标号
     i = 0
-    for job in jobs:
-        for op in job:
+    for job in jobs: # 每个任务标一个号
+        for op in job: # 重复出现次数为该任务的工序数目
             OS.append(i)
         i = i + 1
 
@@ -22,13 +22,13 @@ def generateOS(parameters):
 
 # 生成机器码
 def generateMS(parameters):
-    jobs = parameters['job']
+    jobs = parameters['jobs']
 
     MS = []
     for job in jobs: # 遍历每个工序
         for op in job: # 遍历工序的可选机器列表
             randomMachine = random.randint(0, len(op) - 1) # 随机选取一个可选机器
-            MS.append(randomMachine)
+            MS.append(randomMachine) # 加入机器码序列
     return MS
 
 
