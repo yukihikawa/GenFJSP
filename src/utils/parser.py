@@ -11,7 +11,7 @@ second operation and so on...
 -每一行代表一个作业：第一个数字是该作业的操作数，第二个数字（假设k>=1）是可以处理第一个操作的机器数；然后根据k，有k对数字（机器、处理时间），
 指定哪些是机器和处理时间；然后是第二次操作的数据等等。。。
 
-返回结构：一个字典，包含机器数量machineNB和作业的列表jobs
+返回结构：一个字典，包含机器数量machinesNb和作业的列表jobs
 jobs是一个list，元素为所有工件/作业 operations。
 operations 是一个list， 元素为每个工件的各个工序operation。
 operation是一个list，元素为dict，是该工序在各个机器上的加工时间，每个dict包含两个键值对，分别是“机器序号”-机器序号，“加工时间”-加工时间
@@ -26,7 +26,7 @@ def parse(path):
     firstLineValue = list(map(int, firstLine.split()[0:2]))
 
     jobsNb = firstLineValue[0]  # 作业/工件数量
-    machineNb = firstLineValue[1] # 机器数量
+    machinesNb = firstLineValue[1] # 机器数量
 
     jobs = [] # 作业列表
 
@@ -55,6 +55,6 @@ def parse(path):
 
     file.close()
 
-    return {'machineNb': machineNb, 'jobs': jobs}
+    return {'machinesNb': machinesNb, 'jobs': jobs}
 
 

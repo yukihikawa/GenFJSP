@@ -16,24 +16,24 @@ if len(sys.argv) != 2:
     print("Usage: " + sys.argv[0] + " filename")
 else:
     # Parameters Setting
-    parameters = parser.parse(sys.argv[1])
+    parameters = parser.parse(sys.argv[1]) # 导入数据
 
     t0 = time.time()
 
     # Initialize the Population
-    population = encoding.initializePopulation(parameters)
-    gen = 1
+    population = encoding.initializePopulation(parameters) # 设置种群
+    gen = 1 # 标记代数
 
     # Evaluate the population
-    while not termination.shouldTerminate(population, gen):
-        # Genetic Operators
+    while not termination.shouldTerminate(population, gen): # 迭代
+        # Genetic Operators 选择,交叉,变异
         population = genetic.selection(population, parameters)
         population = genetic.crossover(population, parameters)
         population = genetic.mutation (population, parameters)
         print("gen: " + str(gen))
         gen = gen + 1
 
-    sortedPop = sorted(population, key=lambda cpl: genetic.timeTaken(cpl, parameters))
+    sortedPop = sorted(population, key=lambda cpl: genetic.timeTaken(cpl, parameters)) # 选出最优
 
     t1 = time.time()
     total_time = t1 - t0
