@@ -42,6 +42,8 @@ else:
     # Termination Criteria Satisfied ?
     gantt_data = decoding.translate_decoded_to_gantt(decoding.decode(parameters, sortedPop[0][0], sortedPop[0][1]))
 
+    print(genetic.timeTaken((sortedPop[0][0], sortedPop[0][1]), parameters))
+
     if config.latex_export:
         gantt.export_latex(gantt_data)
     else:

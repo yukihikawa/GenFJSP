@@ -20,31 +20,46 @@ def timeTaken(os_ms, pb_instance):
 
     return max(max_per_machine)
 
-### 改变指定位置的机器码 已测
-def changeMs(idx, os, ms, parameters):
+### 改变指定机器码序列位置的机器码 已测
+def changeMsRandom(machineIdx, ms, parameters):
     jobs = parameters['jobs'] # 作业的集合
-    jobIdx = os[idx] # 指定的位置所属的作业序号
-    opIdx = 0 # 指定位置是所属作业的第几道工序
-    for index, val in enumerate(os):
-        if(index == idx):
+    # jobIdx = os[machineIdx] # 指定的位置所属的作业序号 错误在此
+    mcLength = 0 # 工具人
+    jobIdx = -1 # 所属工作号
+
+    for job in jobs:
+        jobIdx += 1
+
+        if mcLength + len(job) >= machineIdx + 1:
             break
         else:
-            if val == jobIdx:
-                opIdx += 1
-    print('belongs to: job', jobIdx + 1, ' op: ', opIdx + 1, ' ava machine: ', len(jobs[jobIdx][opIdx]))
-    newMachine = random.randint(0, len(jobs[jobIdx][opIdx]) - 1)
-    while ms[idx] == newMachine and len(jobs[jobIdx][opIdx]) > 1:
-        newMachine = random.randint(0, len(jobs[jobIdx][opIdx]) - 1)
+            mcLength += len(job)
 
+    opIdx = machineIdx - mcLength# 指定位置对应的 在工件中的工序号
+
+    # print('belongs to: job', jobIdx, ' op: ', opIdx, ' ava machine: ', len(jobs[jobIdx][opIdx]))
+    newMachine = random.randint(0, len(jobs[jobIdx][opIdx]) - 1)
     newMs = ms.copy()
-    print('ori: ', newMs)
-    newMs[idx] = newMachine
+    newMs[machineIdx] = newMachine
     return newMs
+
+# 获取指定 os 位置工序在 ms 中的位置
+def getMachineIdx(jobIdx, os, parameters):
+    jobNum = os[jobIdx] # 工件号
+    jobs = parameters['jobs'] # 工件集合
+    machineIdx = 0 # 在 ms 中的位置
+    for i in range(0, jobNum): #
+        machineIdx += len(jobs[i])
+    for i in range(0, jobIdx):
+        if os[i] == jobNum:
+            machineIdx += 1
+    return machineIdx
 
 
 # =====================启发式操作++++++++++++++++++
-# 1. 随机交换两个工序码 已测
+# 1. 随机交换两个工序码, 返回新的工序码 已测
 def heuristic1(os):
+    # 随机选择两个不同机器码
     ida = idb = random.randint(0, len(os) - 1)
     while ida == idb:
         idb = random.randint(0, len(os) - 1)
@@ -56,8 +71,11 @@ def heuristic1(os):
 # 2. 随机反转工序码子序列 已测
 def heuristic2(os):
     ida = idb = random.randint(0, len(os) - 2)
-    while ida >= idb:
+    while ida == idb:
         idb = random.randint(0, len(os) - 1)
+
+    if ida > idb:
+        ida, idb = idb, ida
 
     rev = os[ida:idb + 1]
     rev.reverse()
@@ -67,10 +85,12 @@ def heuristic2(os):
 
 # 3. 随机前移工序码子序列 已测
 def heuristic3(os):
-    ida = random.randint(0, len(os) - 1)
-    idb = random.randint(0, len(os) - 1)
-    while ida > idb:
+    ida = idb = random.randint(0, len(os) - 2)
+    while ida == idb:
         idb = random.randint(0, len(os) - 1)
+
+    if ida > idb:
+        ida, idb = idb, ida
 
     newOs =os[ida:idb + 1] + os[:ida] + os[idb + 1:]
 
@@ -81,10 +101,10 @@ def heuristic4(os):
     pass
 
 # 5. 随机改变单个机器码 已测
-def heuristic5(os, ms, parameters):
+def heuristic5(ms, parameters):
     machineIdx = random.randint(0, len(ms) - 1)
     print('selected idx : ', machineIdx)
-    return changeMs(machineIdx, os, ms, parameters)
+    return changeMsRandom(machineIdx, ms, parameters)
 
 # 6. 机器码简化领域搜索
 def heuristic6(ms, parameters):
@@ -94,7 +114,7 @@ def heuristic6(ms, parameters):
 def heuristic7(os, ms, parameters):
     pass
 
-# 8. 工序码随机交换同时随机改变对应位置机器码
+# 8. 工序码随机交换同时随机改变对应位置机器码 已测
 def heuristic8(os, ms, parameters):
     jobs = parameters['jobs']
     newOs = os.copy()
@@ -105,18 +125,47 @@ def heuristic8(os, ms, parameters):
         idb = random.randint(0, len(os) - 1)
 
     newOs[ida], newOs[idb] = newOs[idb], newOs[ida] # 工序码交换完成
+    machineIda = getMachineIdx(ida, os, parameters)
+    machineIdb = getMachineIdx(idb, os, parameters)
 
-    jobIda = os[ida]
-    jobIdb = os[idb]
-
-    newMachineA = random.randint(0, len(jobs[jobIda]) - 1)
-    while ms[ida] == newMachineA:
-        newMachineA = random.randint(0, len(jobs[jobIda]) - 1)
-
-    newMachineB = random.randint(0, len(jobs[jobIdb]) - 1)
-    while ms[idb] == newMachineB:
-        newMachineB = random.randint(0, len(jobs[jobIdb]) - 1)
-
-    newMs[ida], newMs[idb] = newMachineA, newMachineB
+    newMs = changeMsRandom(machineIda, newMs, parameters)
+    newMs = changeMsRandom(machineIdb, newMs, parameters)
 
     return (newOs, newMs)
+
+# 9. 工序码随机反转子序列并同时随机改变对应位置机器码 已测
+def heuristic9(os, ms, parameters):
+    ida = idb = random.randint(0, len(os) - 2)
+    while ida == idb:
+        idb = random.randint(0, len(os) - 1)
+
+    if ida > idb:
+        ida, idb = idb, ida
+
+    # print('start: ', ida, ' end: ', idb)
+
+    rev = os[ida:idb + 1]
+    rev.reverse()
+    newOs = os[:ida] + rev + os[idb + 1:]
+    newMs = ms.copy()
+    for i in range(ida, idb + 1):
+        # print('place: ', i)
+        newMs = changeMsRandom(i, newMs, parameters)
+
+    return newOs, newMs
+
+# 10. 随机前移工序码子序列, 并改变对应位置的机器码 已测
+def heuristic10(os, ms, parameters):
+    ida = idb = random.randint(0, len(os) - 2)
+    while ida == idb:
+        idb = random.randint(0, len(os) - 1)
+
+    if ida > idb:
+        ida, idb = idb, ida
+
+    newOs =os[ida:idb + 1] + os[:ida] + os[idb + 1:]
+    newMs = ms.copy()
+    for i in range(0, idb - ida + 1):
+        newMs = changeMsRandom(i, newMs, parameters)
+
+    return newOs, newMs
