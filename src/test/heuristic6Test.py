@@ -8,7 +8,7 @@ from src.LLH import encoding
 str = '/Users/wurifu/PycharmProjects/GenFJSP/test_data/Brandimarte_Data/Text/Mk01.fjs'
 para = parser.parse(str)
 
-print('test5')
+print('test6')
 os = encoding.generateOS(para)
 ms = encoding.generateMS(para)
 result = (os, ms)
@@ -21,8 +21,8 @@ gantt.draw_chart(gantt_data)
 
 lastBest = result
 historyBestTime = 10000
-for i in range(0, 300):
-    newResult = lowlevelheuristic.heuristic5(lastBest, para)
+for i in range(0, 20):
+    newResult = lowlevelheuristic.heuristic6(lastBest, para)
     nt = lowlevelheuristic.timeTaken(newResult, para)
     lt = lowlevelheuristic.timeTaken(result, para)
     if nt < historyBestTime:

@@ -1,6 +1,32 @@
 import random
-import itertools
-from src.LLH import decoding
+from src.LLH import decoding, genetic
+
+def LLHolder():
+    llh = []
+    llh.append(heuristic1)
+    llh.append(heuristic2)
+    llh.append(heuristic3)
+    llh.append(heuristic4)
+    llh.append(heuristic5)
+    llh.append(heuristic6)
+    llh.append(heuristic7)
+    llh.append(heuristic8)
+    llh.append(heuristic9)
+    llh.append(heuristic10)
+    llh.append(heuristic11)
+
+    return llh
+
+def LLHolder2():
+    llh = []
+    llh.append(heuristic4)
+    llh.append(heuristic6)
+    llh.append(heuristic7)
+    llh.append(heuristic11)
+
+    return llh
+
+
 
 # ================== 工具方法 ===================
 # 最大完成时间
@@ -20,12 +46,12 @@ def timeTaken(os_ms, pb_instance):
 
     return max(max_per_machine)
 
-### 改变指定机器码序列位置的机器码 已测
+# 改变指定机器码序列位置的机器码 已测
 def changeMsRandom(machineIdx, ms, parameters):
-    jobs = parameters['jobs'] # 作业的集合
+    jobs = parameters['jobs']  # 作业的集合
     # jobIdx = os[machineIdx] # 指定的位置所属的作业序号 错误在此
-    mcLength = 0 # 工具人
-    jobIdx = -1 # 所属工作号
+    mcLength = 0  # 工具人
+    jobIdx = -1  # 所属工作号
 
     for job in jobs:
         jobIdx += 1
@@ -35,7 +61,7 @@ def changeMsRandom(machineIdx, ms, parameters):
         else:
             mcLength += len(job)
 
-    opIdx = machineIdx - mcLength# 指定位置对应的 在工件中的工序号
+    opIdx = machineIdx - mcLength  # 指定位置对应的 在工件中的工序号
 
     # print('belongs to: job', jobIdx, ' op: ', opIdx, ' ava machine: ', len(jobs[jobIdx][opIdx]))
     newMachine = random.randint(0, len(jobs[jobIdx][opIdx]) - 1)
@@ -45,10 +71,10 @@ def changeMsRandom(machineIdx, ms, parameters):
 
 # 获取指定 os 位置工序在 ms 中的位置
 def getMachineIdx(jobIdx, os, parameters):
-    jobNum = os[jobIdx] # 工件号
-    jobs = parameters['jobs'] # 工件集合
-    machineIdx = 0 # 在 ms 中的位置
-    for i in range(0, jobNum): #
+    jobNum = os[jobIdx]  # 工件号
+    jobs = parameters['jobs']  # 工件集合
+    machineIdx = 0  # 在 ms 中的位置
+    for i in range(0, jobNum):  #
         machineIdx += len(jobs[i])
     for i in range(0, jobIdx):
         if os[i] == jobNum:
@@ -58,18 +84,22 @@ def getMachineIdx(jobIdx, os, parameters):
 
 # =====================启发式操作++++++++++++++++++
 # 1. 随机交换两个工序码, 返回新的工序码 已测
-def heuristic1(os):
+def heuristic1(os_ms, parameters):
+    # print('1')
     # 随机选择两个不同机器码
+    (os, ms) = os_ms
     ida = idb = random.randint(0, len(os) - 1)
     while ida == idb:
         idb = random.randint(0, len(os) - 1)
 
     newOs = os.copy()
     newOs[ida], newOs[idb] = newOs[idb], newOs[ida]
-    return newOs
+    return (newOs, ms)
+
 
 # 2. 随机反转工序码子序列 已测
-def heuristic2(os):
+def heuristic2(os_ms, parameters):
+    (os, ms) = os_ms
     ida = idb = random.randint(0, len(os) - 2)
     while ida == idb:
         idb = random.randint(0, len(os) - 1)
@@ -81,10 +111,12 @@ def heuristic2(os):
     rev.reverse()
     newOs = os[:ida] + rev + os[idb + 1:]
 
-    return newOs
+    return (newOs, ms)
+
 
 # 3. 随机前移工序码子序列 已测
-def heuristic3(os):
+def heuristic3(os_ms, parameters):
+    (os, ms) = os_ms
     ida = idb = random.randint(0, len(os) - 2)
     while ida == idb:
         idb = random.randint(0, len(os) - 1)
@@ -92,31 +124,79 @@ def heuristic3(os):
     if ida > idb:
         ida, idb = idb, ida
 
-    newOs =os[ida:idb + 1] + os[:ida] + os[idb + 1:]
+    newOs = os[ida:idb + 1] + os[:ida] + os[idb + 1:]
 
-    return newOs
+    return (newOs, ms)
 
-# 4. 对 os 简化领域搜索
-def heuristic4(os):
-    pass
+
+# 4. 对 os 简化领域搜索 已测
+def heuristic4(os_ms, parameters):
+    (os, ms) = os_ms
+    tos = os.copy()
+    # print(tos)
+    idx = random.randint(0, len(tos) - 1)
+    bestTime = timeTaken((tos, ms), parameters)
+    # print('selected position: ', idx)
+    for i in range(0, len(tos)):
+        newOs = tos.copy()
+        k = newOs[idx]
+        newOs = newOs[0:idx] + newOs[idx + 1: len(newOs)]
+        newOs = newOs[0: i] + [k] + newOs[i: len(newOs)]
+        # print(newOs)
+        if bestTime > timeTaken((newOs, ms), parameters):
+            tos = newOs
+    return (tos, ms)
+
 
 # 5. 随机改变单个机器码 已测
-def heuristic5(ms, parameters):
+def heuristic5(os_ms, parameters):
+    (os, ms) = os_ms
     machineIdx = random.randint(0, len(ms) - 1)
-    print('selected idx : ', machineIdx)
-    return changeMsRandom(machineIdx, ms, parameters)
+    # ('selected idx : ', machineIdx)
+    return (os, changeMsRandom(machineIdx, ms, parameters))
 
-# 6. 机器码简化领域搜索
-def heuristic6(ms, parameters):
-    pass
+
+# 6. 机器码简化领域搜索 已测
+def heuristic6(os_ms, parameters):
+    (os, ms) = os_ms
+    tms = ms.copy()
+    bestTime = timeTaken((os, tms), parameters)
+    for i in range(0, len(tms)):
+        newMs = changeMsRandom(i, ms, parameters)
+        if bestTime > timeTaken((os, newMs), parameters):
+            tms = newMs
+
+    return (os, tms)
+
 
 # 7. 并行简化领域搜索
-def heuristic7(os, ms, parameters):
-    pass
+def heuristic7(os_ms, parameters):
+    (os, ms) = os_ms
+    tos = os.copy()
+    tms = ms.copy()
+    # print(tos)
+    idx = random.randint(0, len(tos) - 1)
+
+    bestTime = timeTaken((tos, ms), parameters)
+    # print('selected position: ', idx)
+    for i in range(0, len(tos)):
+        newOs = tos.copy()
+        k = newOs[idx]
+        newOs = newOs[0:idx] + newOs[idx + 1: len(newOs)]
+        newOs = newOs[0: i] + [k] + newOs[i: len(newOs)]
+        machineIdx = getMachineIdx(i, os, parameters)
+        newMs = changeMsRandom(machineIdx, ms, parameters)
+        # print(newOs)
+        if bestTime > timeTaken((newOs, newMs), parameters):
+            tos = newOs
+            tms = newMs
+    return (tos, tms)
+
 
 # 8. 工序码随机交换同时随机改变对应位置机器码 已测
-def heuristic8(os, ms, parameters):
+def heuristic8(os_ms, parameters):
     jobs = parameters['jobs']
+    (os, ms) = os_ms
     newOs = os.copy()
     newMs = ms.copy()
 
@@ -124,7 +204,7 @@ def heuristic8(os, ms, parameters):
     while ida == idb:
         idb = random.randint(0, len(os) - 1)
 
-    newOs[ida], newOs[idb] = newOs[idb], newOs[ida] # 工序码交换完成
+    newOs[ida], newOs[idb] = newOs[idb], newOs[ida]  # 工序码交换完成
     machineIda = getMachineIdx(ida, os, parameters)
     machineIdb = getMachineIdx(idb, os, parameters)
 
@@ -133,8 +213,10 @@ def heuristic8(os, ms, parameters):
 
     return (newOs, newMs)
 
+
 # 9. 工序码随机反转子序列并同时随机改变对应位置机器码 已测
-def heuristic9(os, ms, parameters):
+def heuristic9(os_ms, parameters):
+    (os, ms) = os_ms
     ida = idb = random.randint(0, len(os) - 2)
     while ida == idb:
         idb = random.randint(0, len(os) - 1)
@@ -152,10 +234,12 @@ def heuristic9(os, ms, parameters):
         # print('place: ', i)
         newMs = changeMsRandom(i, newMs, parameters)
 
-    return newOs, newMs
+    return (newOs, newMs)
+
 
 # 10. 随机前移工序码子序列, 并改变对应位置的机器码 已测
-def heuristic10(os, ms, parameters):
+def heuristic10(os_ms, parameters):
+    (os, ms) = os_ms
     ida = idb = random.randint(0, len(os) - 2)
     while ida == idb:
         idb = random.randint(0, len(os) - 1)
@@ -163,9 +247,34 @@ def heuristic10(os, ms, parameters):
     if ida > idb:
         ida, idb = idb, ida
 
-    newOs =os[ida:idb + 1] + os[:ida] + os[idb + 1:]
+    newOs = os[ida:idb + 1] + os[:ida] + os[idb + 1:]
     newMs = ms.copy()
     for i in range(0, idb - ida + 1):
         newMs = changeMsRandom(i, newMs, parameters)
 
-    return newOs, newMs
+    return (newOs, newMs)
+
+
+# 11. 遗传算法
+def heuristic11(os_ms, parameters):
+    # print('11')
+    result = (os_ms[0].copy(), os_ms[1].copy())
+    # Initialize the Population
+    population = []  # 设置种群
+    for i in range(40):
+        population.append(result)
+
+    gen = 1  # 标记代数
+
+    # Evaluate the population
+    while gen < 5:  # 迭代
+        # Genetic Operators 选择,交叉,变异
+        population = genetic.selection(population, parameters)
+        population = genetic.crossover(population, parameters)
+        population = genetic.mutation(population, parameters)
+        # print("gen: " + str(gen))
+        gen = gen + 1
+
+    sortedPop = sorted(population, key=lambda cpl: genetic.timeTaken(cpl, parameters))  # 选出最优
+
+    return (sortedPop[0][0], sortedPop[0][1])

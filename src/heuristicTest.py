@@ -64,6 +64,9 @@ gantt.draw_chart(gantt_data)
 print(os)
 print(ms)
 # print(lowlevelheuristic.changeMsRandom(4, ms, para))
-for i in range(0, 7):
-    print('=====================',i,'========================')
-    print(lowlevelheuristic.changeMsRandom(i, ms, para))
+# for i in range(0, 7):
+#     print('=====================',i,'========================')
+#     print(lowlevelheuristic.changeMsRandom(i, ms, para))
+
+print('==================h4================')
+lowlevelheuristic.heuristic4(os, ms)

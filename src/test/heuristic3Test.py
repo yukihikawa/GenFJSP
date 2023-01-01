@@ -4,47 +4,37 @@ from src.utils import parser, gantt
 from src.LLH import lowlevelheuristic
 from src.LLH import decoding
 from src.LLH import encoding
-
+from src.LLH.lowlevelheuristic import LLHolder
+llh = LLHolder()
 str = '/Users/wurifu/PycharmProjects/GenFJSP/test_data/Brandimarte_Data/Text/Mk01.fjs'
 para = parser.parse(str)
-print(para)
 
+print('test3')
 os = encoding.generateOS(para)
 ms = encoding.generateMS(para)
+result = (os, ms)
 print('OS: ', os)
 print('ms: ', ms)
-print('time:', lowlevelheuristic.timeTaken((os, ms), para))
+oriTime = lowlevelheuristic.timeTaken(result, para)
+print('time:', oriTime)
 gantt_data = decoding.translate_decoded_to_gantt(decoding.decode(para, os, ms))
 gantt.draw_chart(gantt_data)
 
-newOs = lowlevelheuristic.heuristic2(os)
-print('OS: ', os)
-print('OS: ', newOs)
-oriTime = lowlevelheuristic.timeTaken((newOs, ms), para)
-print('time:', oriTime)
-gantt_data = decoding.translate_decoded_to_gantt(decoding.decode(para, newOs, ms))
-gantt.draw_chart(gantt_data)
-
-lastBest = os
+lastBest = result
 historyBestTime = 10000
-for i in range(0, 100000):
-    newos = lowlevelheuristic.heuristic3(os)
-    nt = lowlevelheuristic.timeTaken((newos, ms), para)
-    lt = lowlevelheuristic.timeTaken((os, ms), para)
-    if nt < lt:
-        os= newos
-        if nt < historyBestTime:
-            lastBest = os
-            historyBestTime = nt
-            print(i, ' new Best time:', nt)
-    else:
-        if random.randint(0, 10) >= 5:
-            print('random accept')
-            os = newos
-    print(i, ' new time:', lowlevelheuristic.timeTaken((os, ms), para))
-    decoding.decode(para, newOs, ms)
+print(llh[2])
+for i in range(0, 100):
+    newResult = llh[2](lastBest, para)
+    nt = lowlevelheuristic.timeTaken(newResult, para)
+    lt = lowlevelheuristic.timeTaken(result, para)
+    if nt < historyBestTime:
+        lastBest = newResult
+        historyBestTime = nt
+        print(i, ' new Best time:', nt)
+    print(i, ' new time:', lowlevelheuristic.timeTaken(newResult, para))
+    decoding.decode(para, newResult[0], newResult[1])
 
 print('ori time:', oriTime)
-print('Best time:', lowlevelheuristic.timeTaken((lastBest, ms), para))
-gantt_data = decoding.translate_decoded_to_gantt(decoding.decode(para, lastBest, ms))
+print('final Best time:', lowlevelheuristic.timeTaken(lastBest, para))
+gantt_data = decoding.translate_decoded_to_gantt(decoding.decode(para, lastBest[0], lastBest[1]))
 gantt.draw_chart(gantt_data)
