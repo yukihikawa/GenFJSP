@@ -31,6 +31,11 @@ def generateMS(parameters):
             MS.append(randomMachine)  # 加入机器码序列
     return MS
 
+# 初始化解
+def initializeResult(parameters):
+    OS = generateOS(parameters)
+    MS = generateMS(parameters)
+    return (OS, MS)
 # 初始化种群
 def initializePopulation(parameters):
     gen1 = []
