@@ -15,7 +15,7 @@ for episode in range(400):
     while True:
         net.env.render() # 刷新环境
         a = dqn.choose_action(s) # 选择行动
-        s_, r, done, info = net.env.step(a) # 执行行动, 得到下一状态, 奖励, 是否终止
+        s_, r, done, done1, info = net.env.step(a) # 执行行动, 得到下一状态, 奖励, 是否终止
 
         # 修改奖励
         x, x_dot, theta, theta_dot = s_

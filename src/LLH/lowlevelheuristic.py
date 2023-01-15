@@ -1,3 +1,4 @@
+import math
 import random
 from src.LLH import decoding, genetic
 
@@ -25,6 +26,28 @@ def LLHolder2():
     llh.append(heuristic11)
 
     return llh
+
+# 以模拟退火机制, 调用 function,参数为 solution 和 parameters.
+# 如果 solution 的 timeTaken(solution, parameters) 比原来的小,则接受新的 solution
+# 否则以一定概率接受新的 solution,并存储历史上的最优值
+# 降温过程结束后返回历史最优解
+def SAWarapper(function, solution, parameters, maxTemp=100, minTemp=0.01, coolingRate=0.99):
+    bestSolution = solution
+    bestTime = timeTaken(bestSolution, parameters)
+    currentSolution = solution
+    currentTemp = maxTemp
+    while currentTemp > minTemp:
+        newSolution = function(currentSolution, parameters)
+        newTime = timeTaken(newSolution, parameters)
+        if newTime < bestTime:
+            bestSolution = newSolution
+            bestTime = newTime
+        else:
+            p = math.exp(-(newTime - bestTime) / currentTemp)
+            if random.random() < p:
+                currentSolution = newSolution
+        currentTemp *= coolingRate
+    return bestSolution
 
 
 
