@@ -33,7 +33,7 @@ def elitistSelection(population, parameters):  # 精英选拔,选择最佳的一
     return sortedPop[:keptPopSize]
 
 
-def tournamentsSelection(population, parameters):  # 锦标赛选拔,随机选择规模为B的个体,并选出最好的
+def tournamentSelection(population, parameters):  # 锦标赛选拔,随机选择规模为B的个体,并选出最好的
     b = 2
 
     selectIndividuals = []
@@ -47,7 +47,7 @@ def tournamentsSelection(population, parameters):  # 锦标赛选拔,随机选�
 def selection(population, parameters):  # 新一代先用精英策略选择,剩下的用锦标赛策略填满
     newPop = elitistSelection(population, parameters)
     while len(newPop) < len(population):
-        newPop.append(tournamentsSelection(population, parameters))
+        newPop.append(tournamentSelection(population, parameters))
 
     return newPop
 

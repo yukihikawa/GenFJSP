@@ -4,10 +4,10 @@ import time
 
 
 dqn = net.DQN()
-dqn.eval_net.load_state_dict(torch.load('eval_model.pth'))
+dqn.eval_net.load_state_dict(torch.load('eval_model neo.pth'))
 
 
-for episode in range(400):
+for episode in range(100):
     print("<<<<<<<<<<<<<<Episode: %s" % episode)
     # 初始化环境
     s = net.env.reset()

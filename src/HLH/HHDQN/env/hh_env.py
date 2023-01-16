@@ -6,7 +6,7 @@ import src.LLH.decoding as decoding
 from src.utils import parser, gantt
 import src.LLH.lowlevelheuristic as llh
 
-PROBLEM_STR = '/Users/wurifu/PycharmProjects/GenFJSP/test_data/Brandimarte_Data/Text/Mk02.fjs'
+PROBLEM_STR = "C:\\Users\emg\PycharmProjects\GenFJSP\src\HLH\HHDQN\env\Mk02.fjs"
 LLH_HOLDER = llh.LLHolder()
 class hh_env(gym.Env):
     def __init__(self):
@@ -20,6 +20,7 @@ class hh_env(gym.Env):
         self.observation_space = spaces.Box(low=-float('inf'), high=float('inf'), shape=(1,))
         # self.state = None
         self.env_name = 'hh_env'  # the name of this env.
+        self.prev_loss = 0
         # self.state_dim = self.observation_space.shape[0]  # feature number of state
         # self.action_dim = self.action_space.n  # feature number of action
         # self.if_discrete = True  # discrete action or continuous action
@@ -46,7 +47,7 @@ class hh_env(gym.Env):
         else:
             reward = -1
 
-        return s_, reward, False, False, {}
+        return s_, reward, False, {}
 
     def reset(self, **kwargs):
         self.factory = parser.parse(PROBLEM_STR)

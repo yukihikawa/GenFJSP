@@ -10,9 +10,8 @@ from src.utils import parser, gantt
 from src.genetic import encoding, decoding, genetic, termination
 from src import config
 
-
 # Beginning
-ss = '/Users/wurifu/PycharmProjects/GenFJSP/test_data/Brandimarte_Data/Text/Mk01.fjs'
+ss = 'test_data/Brandimarte_Data/Text/Mk02.fjs'
 # Parameters Setting
 parameters = parser.parse(ss)  # 导入数据
 

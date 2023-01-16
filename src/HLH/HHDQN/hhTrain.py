@@ -3,7 +3,7 @@ import torch
 from src.HLH.HHDQN import net
 
 dqn = net.DQN()
-
+print(torch.cuda.is_available())
 for epoch in range(400):
     print("<<<<<<<<<<<<<<Epoch: %s" % epoch)
     # 初始化环境
@@ -11,9 +11,10 @@ for epoch in range(400):
 
     round = 0
     while True:
+        # print("Round: %s" % round)
         # net.myenv.render()
         a = dqn.choose_action(s)
-        s_, r, done, other, info = net.myenv.step(a)
+        s_, r, done, info = net.myenv.step(a)
 
         dqn.store_transition(s, a, r, s_)
         round += 1
@@ -22,10 +23,12 @@ for epoch in range(400):
 
         if dqn.memory_counter > net.MEMORY_CAPACITY:
             dqn.learn()
+            print('loss = ', dqn.p_loss)
 
-        if round % 20 == 0:
-            net.myenv.render()
+
+
         if round == 100:
+            net.myenv.render()
             break
 torch.save(dqn.eval_net.state_dict(), 'eval_model.pth')
 torch.save(dqn.target_net.state_dict(), 'target_model.pth')

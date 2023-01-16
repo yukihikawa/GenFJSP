@@ -9,6 +9,32 @@ from src.LLH.encoding import initializeResult
 
 heuristics = llh.LLHolder()
 heuristics2 = llh.LLHolder2()
+heuristics3 = llh.LLHolder3()
+
+#基于种群的优化策略
+def populationStrategy(population, parameters, iter):
+    t0 = time.time()
+    # Evaluate the population
+
+    for i in range(0, iter):
+        # 输出当前循环号
+        print('iter ', i)
+
+        # 用索引遍历population
+        for j in range(0, len(population)):
+            function = heuristics[random.randint(0, len(heuristics) - 1)]
+
+            newS = function(population[j], parameters)
+            if llh.timeTaken(newS, parameters) < llh.timeTaken(population[j], parameters):
+                population[j] = newS
+            #population[j] = llh.SAWarapper(function, population[j], parameters, 100, 1, 0.9)
+
+
+    t1 = time.time()
+    total_time = t1 - t0
+    print("Finished in {0:.2f}s".format(total_time))
+
+    return population
 
 # 纯随机选择策略
 def randomStrategy(result, parameters, iter):
@@ -17,9 +43,10 @@ def randomStrategy(result, parameters, iter):
     lastBest = result
     historyBestTime = llh.timeTaken(result, parameters)
     for i in range(0, iter):
-        idx = random.randint(0, len(heuristics) - 1)
+        idx = random.randint(0, len(heuristics) - 2)
         print('heuristic ', idx + 1, ' selected, given time: ', llh.timeTaken(lastBest, parameters))
-        newResult = heuristics[idx](lastBest, parameters)
+        #newResult = heuristics[idx](lastBest, parameters)
+        newResult = llh.SAWarapper(heuristics[idx], lastBest, parameters)
         nt = llh.timeTaken(newResult, parameters)
         lt = llh.timeTaken(result, parameters)
         if nt < historyBestTime:
