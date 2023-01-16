@@ -21,6 +21,8 @@ class Net(nn.Module):
         self.fc1 = nn.Linear(N_STATES, 50)
         self.fc1.weight.data.normal_(0, 0.1) # initialization
         #用均值为 0，标准差为 0.1 的正态分布来初始化神经网络的第一个全连接层（fc1）的权重。这是一种用于初始化神经网络权重的常见技术，用于打破对称性并防止 0 梯度。通过以这种方式初始化权重，模型能够更有效地学习。
+        self.fc2 = nn.Linear(50, 50) # 第二个全连接层
+        self.fc2.weight.data.normal_(0, 0.1) # initialization
         self.out = nn.Linear(50, N_ACTIONS)
         self.out.weight.data.normal_(0, 0.1) # initialization
 
@@ -28,6 +30,8 @@ class Net(nn.Module):
     # 最后，代码的第三行将 ReLU 激活的输出结果传递给输出层（self.out）并返回最终的输出结果 actions_value。
     def forward(self, x):
         x = self.fc1(x)
+        x = F.relu(x)
+        x = self.fc2(x)
         x = F.relu(x)
         actions_value = self.out(x)
         return actions_value

@@ -1,9 +1,10 @@
 import torch
 
 import net
-
+print(torch.cuda.is_available())
+print(torch.__version__)
 dqn = net.DQN()
-
+# dqn.eval_net.load_state_dict(torch.load('eval_model.pth'))
 # 训练 400 个 episode
 for episode in range(400):
     print("<<<<<<<<<<<<<<Episode: %s" % episode)
@@ -35,7 +36,7 @@ for episode in range(400):
         if done:
             print('episode%s---reward_sum: %s' % (episode, round(episode_reward_sum, 2)))
             break
-torch.save(dqn.eval_net.state_dict(), 'eval_model.pth')
-torch.save(dqn.target_net.state_dict(), 'target_model.pth')
+torch.save(dqn.eval_net.state_dict(), 'eval_model neo.pth')
+torch.save(dqn.target_net.state_dict(), 'target_model neo.pth')
 # 关闭环境
 net.env.close()
