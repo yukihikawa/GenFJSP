@@ -23,11 +23,12 @@ for epoch in range(400):
 
         if dqn.memory_counter > net.MEMORY_CAPACITY:
             dqn.learn()
-            print('loss = ', dqn.p_loss)
+            if(round % 100 == 0):
+                print('loss = ', dqn.p_loss)
 
 
 
-        if round == 100:
+        if round == 1000:
             net.myenv.render()
             break
 torch.save(dqn.eval_net.state_dict(), 'eval_model.pth')

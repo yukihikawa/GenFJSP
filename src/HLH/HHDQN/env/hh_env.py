@@ -1,3 +1,5 @@
+import math
+
 import gym
 import numpy as np
 from gym import spaces
@@ -6,7 +8,7 @@ import src.LLH.decoding as decoding
 from src.utils import parser, gantt
 import src.LLH.lowlevelheuristic as llh
 
-PROBLEM_STR = "C:\\Users\emg\PycharmProjects\GenFJSP\src\HLH\HHDQN\env\Mk02.fjs"
+PROBLEM_STR = "/Users/wurifu/PycharmProjects/GenFJSP/src/HLH/HHDQN/env/Mk02.fjs"
 LLH_HOLDER = llh.LLHolder()
 class hh_env(gym.Env):
     def __init__(self):
@@ -27,7 +29,7 @@ class hh_env(gym.Env):
 
     def step(self, action):
         function= LLH_HOLDER[action]
-        newSolution = llh.SAWarapper(function, self.solution, self.factory)
+        newSolution = function(self.solution, self.factory)
         time = llh.timeTaken(newSolution, self.factory)
         # 状态定义为
         if action in [4, 6, 7]:
@@ -36,17 +38,25 @@ class hh_env(gym.Env):
             ck = 40
         s_ = (self.prevTime - time) / self.prevTime + ck
         s_ = np.array([s_], dtype=float)
-
+        FLAG = 1
         # 奖励函数
         if self.prevTime > time:
             self.solution = newSolution
             self.prevTime = time
             reward = 1
-        elif self.prevTime == time:
-            reward = 0
+            FLAG = 1
         else:
-            reward = -1
-
+            if self.prevTime == time:
+                reward = 0
+            else:
+                reward = -1
+            p = math.exp((self.prevTime - time) / (0.01 * FLAG))
+            if np.random.rand() < p:
+                self.solution = newSolution
+                self.prevTime = time
+                FLAG = 1
+            else:
+                FLAG += 1
         return s_, reward, False, {}
 
     def reset(self, **kwargs):
@@ -58,8 +68,8 @@ class hh_env(gym.Env):
 
     def render(self, mode='human'):
         print("finish time: ", self.prevTime)
-        gantt_data = decoding.translate_decoded_to_gantt(decoding.decode(self.factory, self.solution[0], self.solution[1]))
-        gantt.draw_chart(gantt_data)
+        #gantt_data = decoding.translate_decoded_to_gantt(decoding.decode(self.factory, self.solution[0], self.solution[1]))
+        #gantt.draw_chart(gantt_data)
 
     def close(self):
         pass

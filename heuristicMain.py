@@ -14,7 +14,7 @@ from src import config
 
 # Beginning
 # Parameters Setting
-strs = 'test_data\Brandimarte_Data\Text\Mk02.fjs'
+strs = 'test_data/Brandimarte_Data/Text/Mk02.fjs'
 para = parser.parse(strs) # 导入数据
 
 
@@ -28,8 +28,8 @@ oriTime = lowlevelheuristic.timeTaken(result, para)
 print('time:', oriTime)
 
 
-lastBest = highLevelStrategy.randomStrategy(result, para, config.iter)
-#lastBest = highLevelStrategy.greedyStrategy(result, para, config.iter)
+#lastBest = highLevelStrategy.randomStrategy(result, para, config.iter)
+lastBest = highLevelStrategy.greedyStrategy(result, para, config.iter)
 # lastBest = highLevelStrategy.saStrategy(result, para, config.iter)
 
 # Termination Criteria Satisfied ?

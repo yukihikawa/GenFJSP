@@ -60,7 +60,29 @@ def SAWarapper(function, solution, parameters, maxTemp=100, minTemp=0.01, coolin
         currentTemp *= coolingRate
     return bestSolution
 
-
+#
+def SAWarapper2(function, solution, parameters, maxTemp=100, minTemp=0.01, coolingRate=0.9):
+    bestSolution = solution
+    bestTime = timeTaken(bestSolution, parameters)
+    currentSolution = solution
+    currentTemp = maxTemp
+    FLAG = 0
+    while currentTemp > minTemp:
+        newSolution = function(currentSolution, parameters)
+        newTime = timeTaken(newSolution, parameters)
+        if newTime < bestTime:
+            bestSolution = newSolution
+            bestTime = newTime
+            FLAG = 0
+        else:
+            p = math.exp(-(newTime - bestTime) / FLAG)
+            if random.random() < p:
+                currentSolution = newSolution
+                FLAG = 0
+            else:
+                FLAG += 1
+        currentTemp *= coolingRate
+    return bestSolution
 
 # ================== 工具方法 ===================
 # 最大完成时间

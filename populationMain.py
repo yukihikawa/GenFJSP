@@ -14,7 +14,7 @@ from src import config
 
 # Beginning
 # Parameters Setting
-strs = 'test_data\Brandimarte_Data\Text\Mk02.fjs'
+strs = 'test_data\Brandimarte_Data\Text\Mk09.fjs'
 para = parser.parse(strs) # 导入数据
 
 

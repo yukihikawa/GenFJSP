@@ -43,12 +43,12 @@ def randomStrategy(result, parameters, iter):
     lastBest = result
     historyBestTime = llh.timeTaken(result, parameters)
     for i in range(0, iter):
-        idx = random.randint(0, len(heuristics) - 2)
+        idx = random.randint(0, len(heuristics) - 1)
         print('heuristic ', idx + 1, ' selected, given time: ', llh.timeTaken(lastBest, parameters))
-        #newResult = heuristics[idx](lastBest, parameters)
-        newResult = llh.SAWarapper(heuristics[idx], lastBest, parameters)
+        newResult = heuristics[idx](lastBest, parameters)
+        #newResult = llh.SAWarapper(heuristics[idx], lastBest, parameters)
         nt = llh.timeTaken(newResult, parameters)
-        lt = llh.timeTaken(result, parameters)
+        #lt = llh.timeTaken(result, parameters)
         if nt < historyBestTime:
             lastBest = newResult
             historyBestTime = nt
