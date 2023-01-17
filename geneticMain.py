@@ -11,7 +11,7 @@ from src.genetic import encoding, decoding, genetic, termination
 from src import config
 
 # Beginning
-ss = 'test_data/Brandimarte_Data/Text/Mk06.fjs'
+ss = 'test_data/Brandimarte_Data/Text/Mk07.fjs'
 # Parameters Setting
 parameters = parser.parse(ss)  # 导入数据
 

@@ -12,6 +12,7 @@ class SequenceSelection:
         self.heuristics = llh.LLHolder()
         self.prevState = random.randint(0, len(self.heuristics) - 1)
         self.FLAG = 1
+        self.prevTime = 10000
         self.best_solution = None
 
     # 定义一个函数,该函数接受一个状态,根据状态转移矩阵,返回一个状态
@@ -37,25 +38,28 @@ class SequenceSelection:
     def update_solution(self, solution, parameters):
         nextState = self.next_state(self.prevState)
         new_solution = self.heuristics[nextState](solution, parameters)
-        prevTime = llh.timeTaken(solution, parameters)
+        #prevTime = llh.timeTaken(solution, parameters)
         newTime = llh.timeTaken(new_solution, parameters)
-        print('newTime: ', newTime, 'prevTime: ', prevTime)
-        if newTime < prevTime:
+        print('newTime: ', newTime, 'prevTime: ', self.prevTime)
+        self.prevState = nextState
+        if newTime < self.prevTime:
             self.update_transition_matrix(self.prevState, nextState)
-
-            self.prevState = nextState
+            self.prevTime = newTime
+            # self.prevState = nextState
             self.FLAG = 1
             self.best_solution = new_solution
             return new_solution
         else:
             p = random.random()
-            temp = np.exp(-(newTime - prevTime) / (self.FLAG * 0.01))
+            temp = np.exp(-(newTime - self.prevTime) / (self.FLAG * 0.01))
             print('p: ', p, 'temp: ', temp)
             if p < temp:
                 print('accepted!')
+                self.prevTime = newTime
                 self.FLAG = 1
-                self.prevState = nextState
+                # self.prevState = nextState
                 return new_solution
+
             else:
                 self.FLAG += 1
                 return solution

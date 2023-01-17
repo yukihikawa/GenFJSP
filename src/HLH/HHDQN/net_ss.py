@@ -3,7 +3,6 @@ import numpy as np
 from torch import nn
 import torch.nn.functional as F
 import torch
-import src.HLH.HHDQN.env
 from src.HLH.HHDQN.env import hh_env
 # 超参数
 BATCH_SIZE = 32 # 批训练的数据个数
@@ -13,7 +12,7 @@ GAMMA = 0.9 # 奖励递减值
 TARGET_REPLACE_ITER = 100 # Q 现实网络的更新频率
 MEMORY_CAPACITY = 2000 # 记忆库大小
 
-myenv = gym.make('hh_env-v0')
+myenv = gym.make('hh_env_ss-v0')
 
 N_ACTIONS = myenv.action_space.n # 获取动作的个数(10),输出维度
 N_STATES = myenv.observation_space.shape[0] # 获取状态的个数(4),输入维度
@@ -26,11 +25,19 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.fc1 = nn.Linear(N_STATES, 50)
         self.fc1.weight.data.normal_(0, 0.1) # initialization
+        self.fc2 = nn.Linear(50, 50)
+        self.fc2.weight.data.normal_(0, 0.1) # initialization
+        self.fc3 = nn.Linear(50, 50)
+        self.fc3.weight.data.normal_(0, 0.1) # initialization
         self.out = nn.Linear(50, N_ACTIONS)
         self.out.weight.data.normal_(0, 0.1) # initialization
 
     def forward(self, x):
         x = self.fc1(x)
+        x = F.relu(x)
+        x = self.fc2(x)
+        x = F.relu(x)
+        x = self.fc3(x)
         x = F.relu(x)
         actions_value = self.out(x)
         return actions_value
@@ -48,6 +55,7 @@ class DQN(object):
 
     def choose_action(self, x):
         x = torch.unsqueeze(torch.FloatTensor(x), 0)
+        # x = torch.LongTensor(x)
         if np.random.uniform() < EPSILON:
             action_value = self.eval_net.forward(x)
             action = torch.max(action_value, 1)[1].data.numpy()

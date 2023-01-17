@@ -14,7 +14,7 @@ from src import config
 
 # Beginning
 # Parameters Setting
-strs = 'test_data/Brandimarte_Data/Text/Mk07.fjs'
+strs = 'test_data/Brandimarte_Data/Text/Mk09.fjs'
 para = parser.parse(strs) # 导入数据
 ss = sshh.SequenceSelection()
 
@@ -23,7 +23,7 @@ ss = sshh.SequenceSelection()
 # Initialize the Population
 ss.best_solution = solution = (encoding.generateOS(para), encoding.generateMS(para))
 
-oriTime = lowlevelheuristic.timeTaken(ss.best_solution, para)
+ss.prevTime = oriTime = lowlevelheuristic.timeTaken(ss.best_solution, para)
 print('Ori time:', oriTime)
 
 for epoch in range(0, 5000):
