@@ -14,7 +14,7 @@ def LLHolder():
     llh.append(heuristic8)
     llh.append(heuristic9)
     llh.append(heuristic10)
-    llh.append(heuristic11)
+    # llh.append(heuristic11)
 
     return llh
 

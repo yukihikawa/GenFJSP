@@ -1,7 +1,7 @@
 # 遗传算法参数
 
 popSize = 400
-maxGen = 40
+maxGen = 50
 pr = 0.005
 pc = 0.8
 pm = 0.1
