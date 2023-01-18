@@ -8,9 +8,11 @@ import src.LLH.encoding as encoding
 import src.LLH.decoding as decoding
 from src.utils import parser, gantt
 import src.LLH.lowlevelheuristic as llh
+from src.HLH.HHDQN_SS import config
 
-PROBLEM_STR = "C:\\Users\emg\PycharmProjects\GenFJSP\src\HLH\HHDQN\env\Mk02.fjs"
+problem_str = config.PROBLEM
 
+# "C:\\Users\emg\PycharmProjects\GenFJSP\src\HLH\HHDQN\env\Mk01.fjs"
 class hh_env_ss(gym.Env):
     def __init__(self):
         #self.factory = parser.parse(PROBLEM_STR)
@@ -66,7 +68,7 @@ class hh_env_ss(gym.Env):
         return s_, reward, False, {}
 
     def reset(self, **kwargs):
-        self.parameters = parser.parse(PROBLEM_STR)
+        self.parameters = parser.parse(problem_str)
         self.best_solution = self.solution = encoding.initializeResult(self.parameters)
         self.FLAG = 1
         self.prevTime = llh.timeTaken(self.solution, self.parameters)
