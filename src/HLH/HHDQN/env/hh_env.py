@@ -8,7 +8,7 @@ import src.LLH.decoding as decoding
 from src.utils import parser, gantt
 import src.LLH.lowlevelheuristic as llh
 
-PROBLEM_STR = "/Users/wurifu/PycharmProjects/GenFJSP/src/HLH/HHDQN/env/Mk02.fjs"
+PROBLEM_STR = "C:\\Users\emg\PycharmProjects\GenFJSP\src\HLH\HHDQN\env\Mk02.fjs"
 LLH_HOLDER = llh.LLHolder()
 class hh_env(gym.Env):
     def __init__(self):

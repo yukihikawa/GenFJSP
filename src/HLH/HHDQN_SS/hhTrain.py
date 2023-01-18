@@ -25,7 +25,7 @@ for epoch in range(400):
 
         if dqn.memory_counter > net_ss.MEMORY_CAPACITY:
             dqn.learn()
-            if(round % 100 == 0):
+            if(round % 500 == 0):
                 print('loss = ', dqn.p_loss)
 
 
