@@ -52,7 +52,7 @@ class hh_env_ss(gym.Env):
             if self.prevTime == newTime:
                 reward = 0
             else:
-                reward = -1
+                reward = 0.2
             p = random.random()
             temp = np.exp(-(newTime - self.prevTime) / (self.FLAG * 0.01))
             if p < temp:
@@ -79,8 +79,8 @@ class hh_env_ss(gym.Env):
     def render(self, mode='human'):
         time = llh.timeTaken(self.best_solution, self.parameters)
         print("finish time: ", time)
-        gantt_data = decoding.translate_decoded_to_gantt(decoding.decode(self.parameters, self.best_solution[0], self.best_solution[1]))
-        gantt.draw_chart(gantt_data)
+        #gantt_data = decoding.translate_decoded_to_gantt(decoding.decode(self.parameters, self.best_solution[0], self.best_solution[1]))
+        #gantt.draw_chart(gantt_data)
 
     def close(self):
         pass

@@ -17,7 +17,7 @@ class hh_env_ss(gym.Env):
         #self.solution = encoding.initializeResult(self.factory)
         #self.iter = 0
         #self.prevTime = 0
-        # 定义动作空间
+        # 定义动作空间, 有0-9共10个动作
         self.action_space = spaces.Discrete(10)
         # 定义状态空间, 有 0-9 共 10 个整数状态
         self.observation_space = spaces.Box(low=0, high=10, shape=(1,), dtype=np.int32)
@@ -37,7 +37,7 @@ class hh_env_ss(gym.Env):
         newSolution = self.heuristics[action](self.solution, self.parameters)
         # prevTime = llh.timeTaken(self.solution, self.parameters)
         newTime = llh.timeTaken(newSolution, self.parameters)
-        # 状态定义为
+
 
 
         # 奖励函数
@@ -51,6 +51,7 @@ class hh_env_ss(gym.Env):
                 reward = 0
             else:
                 reward = -1
+            # 改进模拟退火接受
             p = random.random()
             temp = np.exp(-(newTime - self.prevTime) / (self.FLAG * 0.01))
             if p < temp:

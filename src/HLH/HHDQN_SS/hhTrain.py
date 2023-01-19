@@ -1,11 +1,11 @@
 import torch
-
-# from src.HLH.HHDQN import net
+import config
 from src.HLH.HHDQN_SS import net_ss
 
 dqn = net_ss.DQN()
 print(torch.cuda.is_available())
-for epoch in range(400):
+# dqn.eval_net.load_state_dict(torch.load('eval_model.pth'))
+for epoch in range(config.EPOCH_TRAIN):
     print("<<<<<<<<<<<<<<Epoch: %s" % epoch)
     # 初始化环境
     s = net_ss.myenv.reset()
@@ -25,14 +25,14 @@ for epoch in range(400):
 
         if dqn.memory_counter > net_ss.MEMORY_CAPACITY:
             dqn.learn()
-            if(round % 500 == 0):
+            if(round % (config.INNER_ITER / 10) == 0):
                 print('loss = ', dqn.p_loss)
 
 
 
-        if round == 5000:
+        if round == config.INNER_ITER:
             net_ss.myenv.render()
             break
-torch.save(dqn.eval_net.state_dict(), 'eval_model.pth')
-torch.save(dqn.target_net.state_dict(), 'target_model.pth')
+torch.save(dqn.eval_net.state_dict(), 'eval_model new net.pth')
+torch.save(dqn.target_net.state_dict(), 'target_model new net.pth')
 net_ss.myenv.render()

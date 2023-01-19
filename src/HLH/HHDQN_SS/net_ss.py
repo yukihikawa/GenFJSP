@@ -5,12 +5,12 @@ import torch.nn.functional as F
 import torch
 from src.HLH.HHDQN.env import hh_env
 # 超参数
-BATCH_SIZE = 1024 # 批训练的数据个数
+BATCH_SIZE = 32 # 批训练的数据个数
 LR = 0.05 # 学习率
 EPSILON = 0.9 # 贪婪度 greedy policy
 GAMMA = 0.9 # 奖励递减值
 TARGET_REPLACE_ITER = 100 # Q 现实网络的更新频率
-MEMORY_CAPACITY = 20000 # 记忆库大小
+MEMORY_CAPACITY = 4000 # 记忆库大小
 
 myenv = gym.make('hh_env_ss-v0')
 
@@ -27,8 +27,6 @@ class Net(nn.Module):
         self.fc1.weight.data.normal_(0, 0.1) # initialization
         self.fc2 = nn.Linear(50, 50)
         self.fc2.weight.data.normal_(0, 0.1) # initialization
-        self.fc3 = nn.Linear(50, 50)
-        self.fc3.weight.data.normal_(0, 0.1) # initialization
         self.out = nn.Linear(50, N_ACTIONS)
         self.out.weight.data.normal_(0, 0.1) # initialization
 
@@ -36,8 +34,6 @@ class Net(nn.Module):
         x = self.fc1(x)
         x = F.relu(x)
         x = self.fc2(x)
-        x = F.relu(x)
-        x = self.fc3(x)
         x = F.relu(x)
         actions_value = self.out(x)
         return actions_value
