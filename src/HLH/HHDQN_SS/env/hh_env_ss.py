@@ -10,7 +10,7 @@ from src.utils import parser, gantt
 import src.LLH.lowlevelheuristic as llh
 from src.HLH.HHDQN_SS import config
 
-problem_str = config.PROBLEM
+problem_str = config.TRAIN_PROBLEM
 
 # "C:\\Users\emg\PycharmProjects\GenFJSP\src\HLH\HHDQN\env\Mk01.fjs"
 class hh_env_ss(gym.Env):
@@ -54,7 +54,7 @@ class hh_env_ss(gym.Env):
             if(self.bestTime > newTime):
                 self.best_solution = newSolution
                 self.bestTime = newTime
-            reward = 2
+            reward = 1 + self.NOT_IMPROVED * 0.01
             self.NOT_ACCEPTED = 1
             self.NOT_IMPROVED = 1
         else:
@@ -62,7 +62,8 @@ class hh_env_ss(gym.Env):
             if self.prevTime == newTime:
                 reward = 0
             else:
-                reward = self.NOT_IMPROVED * 10 / self.ITER
+                #reward = self.NOT_IMPROVED * 10 / self.ITER
+                reward = math.exp(-(10 / self.NOT_IMPROVED))
                 # print("mut reward: ", reward)
 
             # 解的接受

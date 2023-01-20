@@ -35,6 +35,6 @@ for epoch in range(config.EPOCH_TRAIN):
             net_ss.myenv.render()
             print(count)
             break
-torch.save(dqn.eval_net.state_dict(), 'eval_model new env.pth')
-torch.save(dqn.target_net.state_dict(), 'target_model new env.pth')
+torch.save(dqn.eval_net.state_dict(), 'eval_model new reward.pth')
+#torch.save(dqn.target_net.state_dict(), 'target_model new env.pth')
 net_ss.myenv.render()
