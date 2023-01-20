@@ -25,7 +25,9 @@ class hh_env_ss(gym.Env):
         # self.observation_space = spaces.Box(low=0, high=10, shape=(1,), dtype=np.int32)
 
         # 定义状态空间
-        self.observation_space = spaces.Box(low=-float('inf'), high=float('inf'), shape=(1,))
+        #self.observation_space = spaces.Box(low=-float('inf'), high=float('inf'), shape=(1,))
+        self.observation_space = spaces.Tuple((spaces.Discrete(10), spaces.Discrete(float('inf')),
+                                                   spaces.Box(-float('inf'), float('inf'), shape=(1,))))
 
         # self.observation_space = spaces.Discrete(10)
         # self.state = None
@@ -54,7 +56,7 @@ class hh_env_ss(gym.Env):
             if(self.bestTime > newTime):
                 self.best_solution = newSolution
                 self.bestTime = newTime
-            reward = 1 + self.NOT_IMPROVED * 0.01
+            reward = 3 + self.NOT_IMPROVED * 0.01
             self.NOT_ACCEPTED = 1
             self.NOT_IMPROVED = 1
         else:
@@ -63,7 +65,8 @@ class hh_env_ss(gym.Env):
                 reward = 0
             else:
                 #reward = self.NOT_IMPROVED * 10 / self.ITER
-                reward = math.exp(-(10 / self.NOT_IMPROVED))
+                reward = 2 * math.exp(-(35 / self.NOT_IMPROVED)) - 1
+                #reward = -1
                 # print("mut reward: ", reward)
 
             # 解的接受
@@ -85,8 +88,8 @@ class hh_env_ss(gym.Env):
             ck = 20
         else:
             ck = 40
-        s_ = (self.prevTime - newTime) / self.prevTime + ck
-        s_ = np.array([s_], dtype=float)
+        delta = (self.prevTime - newTime) / self.prevTime + ck
+        s_ = (action, self.NOT_IMPROVED, delta)
         return s_, reward, False, {}
 
     def stepTest(self, action):
@@ -134,7 +137,7 @@ class hh_env_ss(gym.Env):
         self.prevTime = self.bestTime = llh.timeTaken(self.solution, self.parameters)
         self.prevState = random.randint(0, 10)
         # 返回一个一维的整型张量,随机取值,取值范围是[0,10)
-        return np.array([self.prevState], dtype=int)
+        return np.array([self.prevState, self.NOT_IMPROVED, 0])
 
     def render(self, mode='human'):
 

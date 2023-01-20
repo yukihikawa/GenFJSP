@@ -15,7 +15,8 @@ MEMORY_CAPACITY = 4000 # 记忆库大小
 myenv = gym.make('hh_env_ss-v0')
 
 N_ACTIONS = myenv.action_space.n # 获取动作的个数(10),输出维度
-N_STATES = myenv.observation_space.shape[0] # 获取状态的个数(4),输入维度
+N_STATES = len(myenv.observation_space) # 获取状态的个数,输入维度
+N_NODES = 60
 
 print(N_ACTIONS)
 print(N_STATES)
@@ -23,13 +24,13 @@ print(N_STATES)
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(N_STATES, 50)
+        self.fc1 = nn.Linear(N_STATES, N_NODES)
         self.fc1.weight.data.normal_(0, 0.1) # initialization
-        self.fc2 = nn.Linear(50, 50)
+        self.fc2 = nn.Linear(N_NODES, N_NODES)
         self.fc2.weight.data.normal_(0, 0.1) # initialization
-        self.fc3 = nn.Linear(50, 50)
+        self.fc3 = nn.Linear(N_NODES, N_NODES)
         self.fc3.weight.data.normal_(0, 0.1) # initialization
-        self.out = nn.Linear(50, N_ACTIONS)
+        self.out = nn.Linear(N_NODES, N_ACTIONS)
         self.out.weight.data.normal_(0, 0.1) # initialization
 
     def forward(self, x):

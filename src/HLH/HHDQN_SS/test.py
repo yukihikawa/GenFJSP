@@ -4,7 +4,7 @@ import time
 import config
 
 dqn = net_ss.DQN()
-dqn.eval_net.load_state_dict(torch.load('eval_model new env.pth'))
+dqn.eval_net.load_state_dict(torch.load('eval_model new reward.pth'))
 
 print(torch.cuda.is_available())
 

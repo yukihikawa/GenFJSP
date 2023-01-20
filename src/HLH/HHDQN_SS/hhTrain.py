@@ -4,7 +4,7 @@ from src.HLH.HHDQN_SS import net_ss
 
 dqn = net_ss.DQN()
 print(torch.cuda.is_available())
-# dqn.eval_net.load_state_dict(torch.load('eval_model new net.pth'))
+#dqn.eval_net.load_state_dict(torch.load('eval_model new reward.pth'))
 for epoch in range(config.EPOCH_TRAIN):
     print("<<<<<<<<<<<<<<Epoch: %s" % epoch)
     # 初始化环境
@@ -35,6 +35,8 @@ for epoch in range(config.EPOCH_TRAIN):
             net_ss.myenv.render()
             print(count)
             break
-torch.save(dqn.eval_net.state_dict(), 'eval_model new reward.pth')
-#torch.save(dqn.target_net.state_dict(), 'target_model new env.pth')
+    if epoch % 100 == 0:
+        torch.save(dqn.eval_net.state_dict(), 'eval_model 01' + str(epoch) +'.pth')
+torch.save(dqn.eval_net.state_dict(), 'eval_model 01.pth')
+torch.save(dqn.target_net.state_dict(), 'target_model 01.pth')
 net_ss.myenv.render()
