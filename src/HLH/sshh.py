@@ -32,7 +32,7 @@ class SequenceSelection:
     # 定义一个函数, 接受solution, parameters, 根据prevState状态转移矩阵得出新 state;
     # 调用 heuristic[state] 对 solution 进行操作,返回新的 solution
     # 之后使用llh.timeTaken()比较两个 Solution, 使用改进的模拟退火接受,如果新解更优则直接接受,否则以一定概率接受
-    # 接收概率由 FLAG 变量决定,当非更优解未被接受时,FLAG+1, FLAG 越大,非改进解被接受的概率越高.当解被接受时,FLAG=1
+    # 接收概率由 NOT_ACCEPTED 变量决定,当非更优解未被接受时,NOT_ACCEPTED+1, NOT_ACCEPTED 越大,非改进解被接受的概率越高.当解被接受时,NOT_ACCEPTED=1
     # 仅当改进解被接受时更新状态转移矩阵
     # 更新 prevState, 返回新的 solution
     def update_solution(self, solution, parameters):

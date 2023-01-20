@@ -4,7 +4,7 @@ import time
 import config
 
 dqn = net_ss.DQN()
-dqn.eval_net.load_state_dict(torch.load('eval_model new net.pth'))
+dqn.eval_net.load_state_dict(torch.load('eval_model new env.pth'))
 
 print(torch.cuda.is_available())
 
@@ -12,7 +12,7 @@ s = net_ss.myenv.reset()
 t0 = time.time()
 round = 0
 count = [0 for i in range(10)]
-for round in range(config.INNER_ITER):
+for round in range(config.TEST_ITER):
     print("Round: %s" % round)
     # net.myenv.render()
     a = dqn.choose_action(s)
@@ -23,7 +23,7 @@ for round in range(config.INNER_ITER):
     round += 1
 
     s = s_  #
-    print("Time: ", net_ss.myenv.prevTime)
+    print("prevTime: ", net_ss.myenv.prevTime, 'bestTime: ', net_ss.myenv.bestTime)
 net_ss.myenv.render()
 t1 = time.time()
 total_time = t1 - t0

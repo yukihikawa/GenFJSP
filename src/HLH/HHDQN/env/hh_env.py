@@ -59,6 +59,8 @@ class hh_env(gym.Env):
                 FLAG += 1
         return s_, reward, False, {}
 
+
+
     def reset(self, **kwargs):
         self.factory = parser.parse(PROBLEM_STR)
         self.solution = encoding.initializeResult(self.factory)

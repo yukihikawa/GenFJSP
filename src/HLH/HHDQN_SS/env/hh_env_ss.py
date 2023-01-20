@@ -22,7 +22,11 @@ class hh_env_ss(gym.Env):
         # 定义动作空间
         self.action_space = spaces.Discrete(10)
         # 定义状态空间, 有 0-9 共 10 个整数状态
-        self.observation_space = spaces.Box(low=0, high=10, shape=(1,), dtype=np.int32)
+        # self.observation_space = spaces.Box(low=0, high=10, shape=(1,), dtype=np.int32)
+
+        # 定义状态空间
+        self.observation_space = spaces.Box(low=-float('inf'), high=float('inf'), shape=(1,))
+
         # self.observation_space = spaces.Discrete(10)
         # self.state = None
         self.env_name = 'hh_env_ss-v0'  # the name of this env.
@@ -34,6 +38,7 @@ class hh_env_ss(gym.Env):
         # self.if_discrete = True  # discrete action or continuous action
 
     def step(self, action):
+        self.ITER += 1
         #print("in env: action: ", action)
         #print(self.heuristics[action])
         newSolution = self.heuristics[action](self.solution, self.parameters)
@@ -44,41 +49,95 @@ class hh_env_ss(gym.Env):
 
         # 奖励函数
         if self.prevTime > newTime:
-            self.best_solution = self.solution = newSolution
+            self.solution = newSolution
             self.prevTime = newTime
-            reward = 1
-            self.FLAG = 1
+            if(self.bestTime > newTime):
+                self.best_solution = newSolution
+                self.bestTime = newTime
+            reward = 2
+            self.NOT_ACCEPTED = 1
+            self.NOT_IMPROVED = 1
         else:
+            self.NOT_IMPROVED += 1
             if self.prevTime == newTime:
                 reward = 0
             else:
-                reward = 0.2
+                reward = self.NOT_IMPROVED * 10 / self.ITER
+                # print("mut reward: ", reward)
+
+            # 解的接受
             p = random.random()
-            temp = np.exp(-(newTime - self.prevTime) / (self.FLAG * 0.01))
+            temp = np.exp(-(newTime - self.prevTime) / (self.NOT_ACCEPTED * 0.01))
             if p < temp:
                 #print('accepted!')
                 self.solution = newSolution
                 self.prevTime = newTime
-                self.FLAG = 1
+                self.NOT_ACCEPTED = 1
+                self.NOT_IMPROVED = 1
             else:
-                self.FLAG += 1
+                self.NOT_ACCEPTED += 1
+                self.NOT_IMPROVED += 1
         #print("finish time: ", self.prevTime)
         # 用 action 创建一个一维张量, 并且将其转换为整型
-        s_ = np.array([action], dtype=np.int32)
+        #s_ = np.array([action], dtype=np.int32)
+        if action in [3, 5, 6]:
+            ck = 20
+        else:
+            ck = 40
+        s_ = (self.prevTime - newTime) / self.prevTime + ck
+        s_ = np.array([s_], dtype=float)
         return s_, reward, False, {}
+
+    def stepTest(self, action):
+        newSolution = self.heuristics[action](self.solution, self.parameters)
+        # prevTime = llh.timeTaken(self.solution, self.parameters)
+        newTime = llh.timeTaken(newSolution, self.parameters)
+        # 奖励函数
+        if self.prevTime > newTime:
+            self.solution = newSolution
+            self.prevTime = newTime
+            if(self.bestTime > newTime):
+                self.best_solution = newSolution
+                self.bestTime = newTime
+
+            self.NOT_ACCEPTED = 1
+        else:
+            # 解的接受
+            p = random.random()
+            temp = np.exp(-(newTime - self.prevTime) / (self.NOT_ACCEPTED * 0.01))
+            if p < temp:
+                print('accepted!')
+                self.solution = newSolution
+                self.prevTime = newTime
+                self.NOT_ACCEPTED = 1
+            else:
+                self.NOT_ACCEPTED += 1
+                print("NOT ACCEPTED count: ", self.NOT_ACCEPTED)
+
+        if action in [3, 5, 6]:
+            ck = 20
+        else:
+            ck = 40
+        s_ = (self.prevTime - newTime) / self.prevTime + ck
+        s_ = np.array([s_], dtype=float)
+        return s_, 0, False, {}
+
+
 
     def reset(self, **kwargs):
         self.parameters = parser.parse(problem_str)
         self.best_solution = self.solution = encoding.initializeResult(self.parameters)
-        self.FLAG = 1
-        self.prevTime = llh.timeTaken(self.solution, self.parameters)
+        self.NOT_ACCEPTED = 1
+        self.NOT_IMPROVED = 1
+        self.ITER = 1
+        self.prevTime = self.bestTime = llh.timeTaken(self.solution, self.parameters)
         self.prevState = random.randint(0, 10)
         # 返回一个一维的整型张量,随机取值,取值范围是[0,10)
         return np.array([self.prevState], dtype=int)
 
     def render(self, mode='human'):
-        time = llh.timeTaken(self.best_solution, self.parameters)
-        print("finish time: ", time)
+
+        print("finish time: ", self.bestTime)
         #gantt_data = decoding.translate_decoded_to_gantt(decoding.decode(self.parameters, self.best_solution[0], self.best_solution[1]))
         #gantt.draw_chart(gantt_data)
 
